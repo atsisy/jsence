@@ -2,6 +2,7 @@ package core;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import strpr.FileLoader;
 import ui.SearchBox;
 import ui.UIRoot;
 
@@ -17,6 +18,9 @@ public class Main extends Application {
     @Override
     public void start(Stage stage){
         init_window(stage);
+
+        FileLoader loader = new FileLoader();
+        System.out.println(loader.load_all("LICENSE"));
 
         UIRoot root = new UIRoot();
 
