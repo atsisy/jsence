@@ -2,20 +2,19 @@ package ui;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-
-import static core.Value.SEARCH_BOX_X;
-import static core.Value.SEARCH_BOX_Y;
+import java.util.function.Consumer;
 
 /**
- * Created by Akihiro on 7/12/2017.
+ * JSence Search box class.
+ * @author Akihiro Takai
  */
 public class SearchBox {
 
     private HBox root_box;
+    private TextField search_box;
 
-    public SearchBox() {
+    SearchBox() {
         final Label search_label = new Label("Search :");
-        TextField search_box;
         Button go_button;
 
         search_box = new TextField();
@@ -25,9 +24,12 @@ public class SearchBox {
         root_box.setSpacing(10);
     }
 
-    public void register_to_root(UIRoot ui_root){
-        ui_root.register(root_box);
-        ui_root.set_place(root_box, SEARCH_BOX_X, SEARCH_BOX_Y);
+    HBox getWhole(){
+        return root_box;
+    }
+
+    void setHandler(Consumer function){
+        search_box.setOnAction(event -> function.accept(search_box.getText()));
     }
 
 }
