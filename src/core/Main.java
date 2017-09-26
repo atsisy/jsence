@@ -1,8 +1,12 @@
 package core;
 
 import javafx.application.Application;
-import javafx.scene.web.HTMLEditor;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import ui.Footer;
 import ui.UIRoot;
 
 import static core.Value.WINDOW_HEIGHT;
@@ -20,8 +24,22 @@ public class Main extends Application {
 
         UIRoot root = new UIRoot();
 
-        HTMLEditor editor = new HTMLEditor();
-        editor.setPrefSize(600, WINDOW_HEIGHT - 20);
+        Footer footer = new Footer(WINDOW_WIDTH, 30.0);
+        footer.PutText("", 0);
+        root.set_place(footer.getCanvas(), 0.0, WINDOW_HEIGHT - 55);
+        root.register(footer.getCanvas());
+
+        TextArea editor = new TextArea();
+        editor.setWrapText(true);
+        editor.setPrefSize(600, WINDOW_HEIGHT - 60);
+        editor.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                footer.PutText(Integer.toString(newValue.length()), 40);
+            }
+        });
+
+
 
         root.register(editor);
         root.set_place(editor, 150.0, 0.0);
