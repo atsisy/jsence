@@ -12,7 +12,7 @@ public class FileLoader {
 
     public String load_all(String file_path){
         try {
-            return Files.lines(Paths.get(file_path), Charset.forName("UTF-8"))
+            return Files.lines(Paths.get(file_path), Charset.forName("Shift-JIS"))
                     .collect(Collectors.joining(System.getProperty("line.separator")));
 
         }catch (IOException e){

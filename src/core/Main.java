@@ -1,9 +1,8 @@
 package core;
 
 import javafx.application.Application;
+import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
-import strpr.FileLoader;
-import ui.SearchBox;
 import ui.UIRoot;
 
 import static core.Value.WINDOW_HEIGHT;
@@ -19,13 +18,13 @@ public class Main extends Application {
     public void start(Stage stage){
         init_window(stage);
 
-        FileLoader loader = new FileLoader();
-        System.out.println(loader.load_all("LICENSE"));
-
         UIRoot root = new UIRoot();
 
-        SearchBox search_box = new SearchBox();
-        search_box.register_to_root(root);
+        HTMLEditor editor = new HTMLEditor();
+        editor.setPrefSize(600, WINDOW_HEIGHT - 20);
+
+        root.register(editor);
+        root.set_place(editor, 150.0, 0.0);
 
         stage.setScene(root.create_scene());
         stage.show();
@@ -33,7 +32,7 @@ public class Main extends Application {
     }
 
     private void init_window(Stage stage){
-        stage.setTitle("Happy Checker");
+        stage.setTitle("JSence");
         stage.setWidth(WINDOW_WIDTH);
         stage.setHeight(WINDOW_HEIGHT);
 
