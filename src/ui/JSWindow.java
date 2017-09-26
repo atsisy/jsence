@@ -10,8 +10,10 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import strpr.StringExtractor;
 
 import java.util.Optional;
 
@@ -66,7 +68,13 @@ public class JSWindow {
         editor.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                footer.PutText(Integer.toString(newValue.length()), 40);
+                footer.PutText("文字数 : " + Integer.toString(newValue.length()), 60);
+            }
+        });
+        editor.setOnKeyReleased(event ->
+        {
+            if(event.getCode() == KeyCode.ENTER){
+                footer.PutText("単語数 : " + Integer.toString(StringExtractor.CountNoun(editor.getText())), 240);
             }
         });
 

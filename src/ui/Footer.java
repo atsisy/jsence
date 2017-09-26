@@ -4,6 +4,7 @@ import javafx.geometry.VPos;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 
+import static core.Value.WINDOW_HEIGHT;
 import static core.Value.WINDOW_WIDTH;
 
 /**
@@ -25,6 +26,8 @@ public class Footer extends Layer {
     public Footer(double width, double height){
         super(width, height);
         background_color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
+        graphicsContext.setFill(background_color);
+        graphicsContext.fillRect(0, 0, WINDOW_HEIGHT, canvas.getHeight());
     }
 
     /**
@@ -42,7 +45,7 @@ public class Footer extends Layer {
      */
     public void PutText(String str, int from_left){
         graphicsContext.setFill(background_color);
-        graphicsContext.fillRect(from_left - 100, 0, WINDOW_WIDTH, 20);
+        graphicsContext.fillRect(from_left - 70, 0, 100, canvas.getHeight());
 
         graphicsContext.setFill(new Color(0.2f, 0.2f, 0.2f, 1.0f));
         graphicsContext.setTextAlign(TextAlignment.CENTER);
