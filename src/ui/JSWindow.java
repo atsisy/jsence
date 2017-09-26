@@ -4,6 +4,7 @@ import core.DocumentLoader;
 import core.DocumentSaver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -16,6 +17,8 @@ import javafx.stage.Stage;
 import strpr.StringExtractor;
 
 import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static core.Value.WINDOW_HEIGHT;
 import static core.Value.WINDOW_WIDTH;
@@ -73,8 +76,16 @@ public class JSWindow {
         });
         editor.setOnKeyReleased(event ->
         {
-            if(event.getCode() == KeyCode.ENTER){
-                footer.PutText("単語数 : " + Integer.toString(StringExtractor.CountNoun(editor.getText())), 240);
+            if(event.getCode() == KeyCode.ENTER) {
+                Task task = new Task<Void>() {
+                    @Override
+                    public Void call() {
+                        footer.PutText("単語数 : " + Integer.toString(StringExtractor.CountNoun(editor.getText())), 240);
+                        return null;
+                    }
+                };
+                Executor executor = Executors.newSingleThreadExecutor();
+                executor.execute(task);
             }
         });
 
