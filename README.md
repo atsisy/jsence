@@ -10,9 +10,11 @@ This software includes the work that is distributed in the Apache License 2.0.
 The work that is included in this software.
 
 kuromoji ~Kuromoji is a self-contained and very easy to use Japanese morphological analyzer designed for search
+
 https://github.com/atilika/kuromoji
 
 JAWJAW ~Java Wrapper for Japanese WordNet ~Hideki Shima
+
 http://compling.hss.ntu.edu.sg/wnja/
 
 # LICENSE

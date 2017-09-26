@@ -3,10 +3,12 @@ package strpr;
 import com.atilika.kuromoji.ipadic.Tokenizer;
 import edu.cmu.lti.jawjaw.JAWJAW;
 import edu.cmu.lti.jawjaw.pobj.POS;
-
 import java.util.ArrayList;
-import java.util.Set;
 
+/**
+ * JSence Extracting string class.
+ * @author Akihiro Takai
+ */
 public class StringExtractor {
 
     public static int CountNoun(String sentence){
@@ -15,15 +17,18 @@ public class StringExtractor {
         return tokenizer.tokenize(sentence).size();
     }
 
-    public static ArrayList<String> collectSynonym(String word, POS pos){
+    public static ArrayList<Word> collectSynonym(String word, String pos_str, POS pos){
 
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<String> str_data = new ArrayList<>();
+        ArrayList<Word> result = new ArrayList<>();
 
-        result.addAll(JAWJAW.findHypernyms(word, pos));
-        result.addAll(JAWJAW.findHyponyms(word, pos));
-        result.addAll(JAWJAW.findEntailments(word, pos));
-        result.addAll(JAWJAW.findTranslations(word, pos));
-        result.addAll(JAWJAW.findDefinitions(word, pos));
+        str_data.addAll(JAWJAW.findHypernyms(word, pos));
+        str_data.addAll(JAWJAW.findHyponyms(word, pos));
+        str_data.addAll(JAWJAW.findEntailments(word, pos));
+        str_data.addAll(JAWJAW.findTranslations(word, pos));
+        str_data.addAll(JAWJAW.findDefinitions(word, pos));
+
+        str_data.forEach(s -> result.add(new Word(s, pos_str)));
 
         return result;
 

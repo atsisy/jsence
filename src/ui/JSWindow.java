@@ -5,17 +5,18 @@ import core.DocumentSaver;
 import edu.cmu.lti.jawjaw.pobj.POS;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import strpr.StringExtractor;
+import strpr.Word;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -37,6 +38,7 @@ public class JSWindow {
     private MenuBar menu_bar;
     private Stage stage;
     private SearchBox search_box;
+    private TableView<Word> word_table_view;
 
     public JSWindow(Stage stage){
 
@@ -53,10 +55,13 @@ public class JSWindow {
         editor = new TextArea();
         config_editor();
 
+        word_table_view = new TableView<>();
+        config_tableview();
+
         search_box = new SearchBox();
         config_searchbox();
 
-        root.getChildren().addAll(menu_bar, footer.getCanvas(), editor);
+        root.getChildren().addAll(menu_bar, footer.getCanvas(), editor, word_table_view);
 
         sort_node();
     }
@@ -138,11 +143,29 @@ public class JSWindow {
 
         search_box.setHandler(str -> {
             System.out.println(str);
-            ArrayList<String> data = StringExtractor.collectSynonym((String)str, POS.n);
-            for(String s : data){System.out.println(s);}
+            ArrayList<Word> data = StringExtractor.collectSynonym((String)str, "名詞", POS.n);
+            ObservableList<Word> list = FXCollections.observableList(data);
+            data = StringExtractor.collectSynonym((String)str, "動詞", POS.v);
+            data.forEach(list::add);
+            word_table_view.itemsProperty().setValue(list);
         });
 
+        set_place(word_table_view, 750, 90);
         set_place(search_box.getWhole(), 700, 40);
+    }
+
+    private void config_tableview(){
+
+        word_table_view.setPrefWidth(220);
+        word_table_view.setPlaceholder(new Label("マッチ数 : 0件"));
+
+        TableColumn<Word, String> part_column = new TableColumn<>("品詞");
+        TableColumn<Word, String> word_column = new TableColumn<>("単語");
+
+        part_column.setCellValueFactory(new PropertyValueFactory<>("part"));
+        word_column.setCellValueFactory(new PropertyValueFactory<>("word"));
+
+        word_table_view.getColumns().addAll(part_column, word_column);
     }
 
     private void sort_node(){
