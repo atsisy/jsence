@@ -1,5 +1,9 @@
 package core;
 
+/**
+ * Paramaters
+ * @author Akihiro Takai
+ */
 public class Value {
 
     public static final double WINDOW_WIDTH = 960;
@@ -7,6 +11,5 @@ public class Value {
 
     public static final double SEARCH_BOX_X = 20;
     public static final double SEARCH_BOX_Y = 20;
-
 
 }
