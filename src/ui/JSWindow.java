@@ -2,6 +2,7 @@ package ui;
 
 import core.DocumentLoader;
 import core.DocumentSaver;
+import edu.cmu.lti.jawjaw.pobj.POS;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -16,6 +17,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import strpr.StringExtractor;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -34,6 +36,7 @@ public class JSWindow {
     private Footer footer;
     private MenuBar menu_bar;
     private Stage stage;
+    private SearchBox search_box;
 
     public JSWindow(Stage stage){
 
@@ -49,6 +52,9 @@ public class JSWindow {
 
         editor = new TextArea();
         config_editor();
+
+        search_box = new SearchBox();
+        config_searchbox();
 
         root.getChildren().addAll(menu_bar, footer.getCanvas(), editor);
 
@@ -125,6 +131,18 @@ public class JSWindow {
 
         set_place(menu_bar, 0, 0);
 
+    }
+
+    private void config_searchbox(){
+        root.getChildren().addAll(search_box.getWhole());
+
+        search_box.setHandler(str -> {
+            System.out.println(str);
+            ArrayList<String> data = StringExtractor.collectSynonym((String)str, POS.n);
+            for(String s : data){System.out.println(s);}
+        });
+
+        set_place(search_box.getWhole(), 700, 40);
     }
 
     private void sort_node(){
