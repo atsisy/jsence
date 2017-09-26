@@ -17,7 +17,7 @@ public class Main extends Application {
     public void start(Stage stage){
         init_window(stage);
 
-        JSWindow js_window = new JSWindow();
+        JSWindow js_window = new JSWindow(stage);
 
         stage.setScene(js_window.CreateScene());
 
