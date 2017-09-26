@@ -20,6 +20,7 @@ public class DocumentSaver {
             File file = new File(file_path);
             FileWriter filewriter = new FileWriter(file);
             filewriter.write(source);
+            filewriter.close();
         }catch(IOException e){
             e.printStackTrace();
             System.err.println("File Save Error.");
