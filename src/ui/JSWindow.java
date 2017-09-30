@@ -8,12 +8,17 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import strpr.StringExtractor;
 import strpr.Word;
@@ -23,8 +28,10 @@ import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static core.Value.DEFAULT_FONT_NAME;
 import static core.Value.WINDOW_HEIGHT;
 import static core.Value.WINDOW_WIDTH;
+import static java.util.Arrays.asList;
 
 /**
  * JSence Window class.
@@ -32,43 +39,64 @@ import static core.Value.WINDOW_WIDTH;
  */
 public class JSWindow {
 
-    private AnchorPane root;
+    private VBox root;
+    private VBox synonym_search;
     private TextArea editor;
     private Footer footer;
     private MenuBar menu_bar;
     private Stage stage;
     private SearchBox search_box;
     private TableView<Word> word_table_view;
+    private ComboBox<String> font_dropdown_list;
+    private ComboBox<String> font_size_dropdown_list;
 
     public JSWindow(Stage stage){
 
         this.stage = stage;
-        root = new AnchorPane();
+        root = new VBox();
 
-        footer = new Footer(WINDOW_WIDTH, 30.0);
+        HBox footer_box = new HBox();
+        footer = new Footer(WINDOW_WIDTH, 20.0);
         footer.PutText("", 0);
-        set_place(footer.getCanvas(), 0.0, WINDOW_HEIGHT - 55);
+        footer_box.getChildren().addAll(footer.getCanvas());
+        footer_box.setAlignment(Pos.BASELINE_CENTER);
 
         menu_bar = new MenuBar();
         config_menubar();
 
+        HBox middle_box = new HBox();
+
+        HBox editor_box = new HBox();
         editor = new TextArea();
         config_editor();
+        editor_box.getChildren().addAll(editor);
+        editor_box.setAlignment(Pos.CENTER_LEFT);
 
+        synonym_search = new VBox();
         word_table_view = new TableView<>();
         config_tableview();
-
         search_box = new SearchBox();
         config_searchbox();
+        synonym_search.getChildren().addAll(search_box.getWhole(), word_table_view);
+        synonym_search.setAlignment(Pos.TOP_RIGHT);
+        synonym_search.setSpacing(20.0);
 
-        root.getChildren().addAll(menu_bar, footer.getCanvas(), editor, word_table_view);
+
+        HBox editor_status_box = new HBox();
+        font_dropdown_list = new ComboBox<>();
+        font_size_dropdown_list = new ComboBox<>();
+        config_font_dropdown_list();
+        editor_status_box.getChildren().addAll(font_dropdown_list, font_size_dropdown_list);
+
+        middle_box.getChildren().addAll(editor_status_box, editor_box, synonym_search);
+        middle_box.setSpacing(2.0);
+
+        root.getChildren().addAll(middle_box, footer_box);
+        root.setAlignment(Pos.TOP_CENTER);
+
+        root.setSpacing(1.0);
 
         sort_node();
-    }
-
-    private void set_place(Node node, double x, double y){
-        AnchorPane.setLeftAnchor(node, x);
-        AnchorPane.setTopAnchor(node, y);
     }
 
     public Scene CreateScene(){
@@ -78,7 +106,6 @@ public class JSWindow {
     private void config_editor(){
         editor.setWrapText(true);
         editor.setPrefSize(600, WINDOW_HEIGHT - 100);
-        set_place(editor, 150, menu_bar.getHeight() + 30);
         editor.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -103,7 +130,6 @@ public class JSWindow {
     }
 
     private void config_menubar(){
-        menu_bar.setPrefWidth(WINDOW_WIDTH);
 
         Menu file_menu = new Menu("ファイル"),
              edit_menu = new Menu("編集"),
@@ -134,7 +160,10 @@ public class JSWindow {
 
         menu_bar.getMenus().addAll(file_menu, edit_menu, help_menu);
 
-        set_place(menu_bar, 0, 0);
+        HBox menu_box = new HBox();
+        menu_box.getChildren().addAll(menu_bar);
+        menu_box.setAlignment(Pos.TOP_LEFT);
+        root.getChildren().addAll(menu_box);
 
     }
 
@@ -147,11 +176,10 @@ public class JSWindow {
             ObservableList<Word> list = FXCollections.observableList(data);
             data = StringExtractor.collectSynonym((String)str, "動詞", POS.v);
             data.forEach(list::add);
+            data = StringExtractor.collectSynonym((String)str, "形容詞", POS.a);
+            data.forEach(list::add);
             word_table_view.itemsProperty().setValue(list);
         });
-
-        set_place(word_table_view, 750, 90);
-        set_place(search_box.getWhole(), 700, 40);
     }
 
     private void config_tableview(){
@@ -166,6 +194,23 @@ public class JSWindow {
         word_column.setCellValueFactory(new PropertyValueFactory<>("word"));
 
         word_table_view.getColumns().addAll(part_column, word_column);
+    }
+
+    private void config_font_dropdown_list(){
+        font_dropdown_list.getItems().addAll(Font.getFamilies());
+        font_dropdown_list.setPrefWidth(170);
+        font_size_dropdown_list.getItems().addAll(asList("2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"));
+        font_dropdown_list.getSelectionModel().select(DEFAULT_FONT_NAME);
+        font_size_dropdown_list.getSelectionModel().select("9");
+        editor.setFont(new Font(font_dropdown_list.getValue(), Integer.valueOf(font_size_dropdown_list.getValue())));
+
+        font_dropdown_list.setOnAction(event -> {
+            editor.setFont(new Font(font_dropdown_list.getValue(), Integer.valueOf(font_size_dropdown_list.getValue())));
+        });
+        font_size_dropdown_list.setOnAction(event -> {
+            editor.setFont(new Font(font_dropdown_list.getValue(), Integer.valueOf(font_size_dropdown_list.getValue())));
+        });
+
     }
 
     private void sort_node(){
