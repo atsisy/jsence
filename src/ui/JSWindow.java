@@ -62,6 +62,7 @@ public class JSWindow {
         footer_box.setAlignment(Pos.BASELINE_CENTER);
 
         menu_bar = new MenuBar();
+        menu_bar.prefWidthProperty().bind(stage.widthProperty());
         config_menubar();
 
         HBox middle_box = new HBox();
