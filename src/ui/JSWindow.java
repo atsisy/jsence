@@ -2,6 +2,7 @@ package ui;
 
 import core.DocumentLoader;
 import core.DocumentSaver;
+import core.TextEditor;
 import edu.cmu.lti.jawjaw.pobj.POS;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -9,20 +10,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import strpr.StringExtractor;
 import strpr.Word;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -39,9 +38,10 @@ import static java.util.Arrays.asList;
  */
 public class JSWindow {
 
+    private Scene scene;
     private VBox root;
     private VBox synonym_search;
-    private TextArea editor;
+    private TextEditor text_editor;
     private Footer footer;
     private MenuBar menu_bar;
     private Stage stage;
@@ -68,9 +68,9 @@ public class JSWindow {
         HBox middle_box = new HBox();
 
         HBox editor_box = new HBox();
-        editor = new TextArea();
+        text_editor = new TextEditor(stage);
         config_editor();
-        editor_box.getChildren().addAll(editor);
+        editor_box.getChildren().addAll(text_editor.node());
         editor_box.setAlignment(Pos.CENTER_LEFT);
 
         synonym_search = new VBox();
@@ -101,25 +101,24 @@ public class JSWindow {
     }
 
     public Scene CreateScene(){
-        return new Scene(root);
+        scene = new Scene(root);
+        return scene;
     }
 
     private void config_editor(){
-        editor.setWrapText(true);
-        editor.setPrefSize(600, WINDOW_HEIGHT - 100);
-        editor.textProperty().addListener(new ChangeListener<String>() {
+        text_editor.node().textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 footer.PutText("文字数 : " + Integer.toString(newValue.length()), 60);
             }
         });
-        editor.setOnKeyReleased(event ->
+        text_editor.node().setOnKeyReleased(event ->
         {
             if(event.getCode() == KeyCode.ENTER) {
                 Task task = new Task<Void>() {
                     @Override
                     public Void call() {
-                        footer.PutText("単語数 : " + Integer.toString(StringExtractor.CountNoun(editor.getText())), 240);
+                        footer.PutText("単語数 : " + Integer.toString(StringExtractor.CountNoun(text_editor.getText())), 240);
                         return null;
                     }
                 };
@@ -127,7 +126,6 @@ public class JSWindow {
                 executor.execute(task);
             }
         });
-
     }
 
     private void config_menubar(){
@@ -142,16 +140,12 @@ public class JSWindow {
         MenuItem file_menu_open_file = new MenuItem("開く");
         file_menu_open_file.setOnAction(event ->
         {
-            DocumentLoader loader = new DocumentLoader();
-            Optional<String> path = Optional.ofNullable(loader.getOpenPathWithWindow(stage));
-            path.ifPresent(file_path -> editor.setText(loader.loadAll(file_path)));
+            text_editor.OpenFile(stage);
         });
         MenuItem file_menu_save_file = new MenuItem("保存");
         file_menu_save_file.setOnAction(event ->
         {
-            DocumentSaver saver = new DocumentSaver();
-            Optional<String> path = Optional.ofNullable(saver.getSavePathWithWindow(stage));
-            path.ifPresent(file_path -> saver.saveDoc(editor.getText(), file_path));
+            text_editor.SaveFile(stage);
         });
         MenuItem file_menu_quit = new MenuItem("終了");
         file_menu_quit.setOnAction(event -> System.exit(0));
@@ -203,13 +197,13 @@ public class JSWindow {
         font_size_dropdown_list.getItems().addAll(asList("2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"));
         font_dropdown_list.getSelectionModel().select(DEFAULT_FONT_NAME);
         font_size_dropdown_list.getSelectionModel().select("9");
-        editor.setFont(new Font(font_dropdown_list.getValue(), Integer.valueOf(font_size_dropdown_list.getValue())));
+        text_editor.setFont(new Font(font_dropdown_list.getValue(), Integer.valueOf(font_size_dropdown_list.getValue())));
 
         font_dropdown_list.setOnAction(event -> {
-            editor.setFont(new Font(font_dropdown_list.getValue(), Integer.valueOf(font_size_dropdown_list.getValue())));
+            text_editor.setFont(new Font(font_dropdown_list.getValue(), Integer.valueOf(font_size_dropdown_list.getValue())));
         });
         font_size_dropdown_list.setOnAction(event -> {
-            editor.setFont(new Font(font_dropdown_list.getValue(), Integer.valueOf(font_size_dropdown_list.getValue())));
+            text_editor.setFont(new Font(font_dropdown_list.getValue(), Integer.valueOf(font_size_dropdown_list.getValue())));
         });
 
     }

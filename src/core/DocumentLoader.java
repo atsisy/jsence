@@ -10,6 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
+/**
+ * JSence Load documents class
+ * @author Akihiro Takai
+ */
 public class DocumentLoader {
 
     private FileChooser file_chooser;

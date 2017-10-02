@@ -7,6 +7,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * JSence Save documents class
+ * @author Akihiro Takai
+ */
 public class DocumentSaver {
 
     private FileChooser file_chooser;
